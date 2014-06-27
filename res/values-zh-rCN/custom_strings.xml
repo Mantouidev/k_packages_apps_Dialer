@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  Copyright (C) 2014 The OmniROM Project
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="nearby_places">附近地点</string>
+    <string name="nearby_places_distance">%1$.1f km 以外</string>
+    <string name="recentCalls_reverseLookup">反向查找</string>
+    <string name="toast_reverse_lookup">搜索从 %1$s 到 %2$s...</string>
+    <string name="toast_reverse_lookup_failed">没有找到这个地方.</string>
+    <string name="toast_reverse_lookup_finished">反向查找完成.</string>
+</resources>
