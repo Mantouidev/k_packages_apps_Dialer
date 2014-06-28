@@ -66,7 +66,7 @@ public class CallStatsDetailHelper {
             nameText = displayNumber;
             if (TextUtils.isEmpty(details.geocode)
                     || mPhoneNumberUtilsWrapper.isVoicemailNumber(details.number)) {
-                numberText = mResources.getString(R.string.call_log_empty_gecode);
+                numberText = mResources.getString(R.string.call_log_empty_geocode);
             } else {
                 numberText = details.geocode;
             }
@@ -74,7 +74,14 @@ public class CallStatsDetailHelper {
         } else {
             nameText = details.name;
             numberText = displayNumber;
-            labelText = numberFormattedLabel;
+            if (TextUtils.isEmpty(details.geocode)
+                    || mPhoneNumberUtilsWrapper.isVoicemailNumber(details.number)) {
+                labelText = TextUtils.isEmpty(numberFormattedLabel) ? mResources.getString(R.string.call_log_empty_geocode) :
+                    numberFormattedLabel + " " + mResources.getString(R.string.call_log_empty_geocode);
+            } else {
+                labelText = TextUtils.isEmpty(numberFormattedLabel) ? details.geocode :
+                    numberFormattedLabel + " " + details.geocode;
+	    }
         }
 
         float in = 0, out = 0, missed = 0;

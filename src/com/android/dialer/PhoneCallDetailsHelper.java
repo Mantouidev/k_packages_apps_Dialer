@@ -118,8 +118,14 @@ public class PhoneCallDetailsHelper {
         } else {
             nameText = details.name;
             numberText = displayNumber;
-            labelText = TextUtils.isEmpty(numberFormattedLabel) ? numberText :
-                    numberFormattedLabel;
+            if (TextUtils.isEmpty(details.geocode)
+                    || mPhoneNumberUtilsWrapper.isVoicemailNumber(details.number)) {
+                labelText = TextUtils.isEmpty(numberFormattedLabel) ? mResources.getString(R.string.call_log_empty_geocode) :
+                    numberFormattedLabel + " " + mResources.getString(R.string.call_log_empty_geocode);
+            } else {
+                labelText = TextUtils.isEmpty(numberFormattedLabel) ? details.geocode :
+                    numberFormattedLabel + " " + details.geocode;
+            }
         }
 
         views.nameView.setText(nameText);
