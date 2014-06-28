@@ -16,6 +16,8 @@
 
 package com.android.dialer.database;
 
+import android.R.integer;
+import android.R.string;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -37,10 +39,12 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.contacts.common.util.StopWatch;
+import com.android.dialer.DialerApplication;
 import com.android.dialer.R;
 import com.android.dialer.dialpad.SmartDialNameMatcher;
 import com.android.dialer.dialpad.SmartDialPrefix;
 
+import com.android.dialer.util.HanziToPinyin;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
@@ -48,6 +52,7 @@ import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -707,7 +712,7 @@ public class DialerDatabaseHelper extends SQLiteOpenHelper {
      * @param nameCursor Cursor pointing to the list of distinct updated contacts.
      */
     @VisibleForTesting
-    void insertNamePrefixes(SQLiteDatabase db, Cursor nameCursor) {
+    void insertNamePrefixes(SQLiteDatabase db, Cursor nameCursor/*, boolean isCN*/) {
         final int columnIndexName = nameCursor.getColumnIndex(
                 SmartDialDbColumns.DISPLAY_NAME_PRIMARY);
         final int columnIndexContactId = nameCursor.getColumnIndex(SmartDialDbColumns.CONTACT_ID);
@@ -721,9 +726,29 @@ public class DialerDatabaseHelper extends SQLiteOpenHelper {
             final SQLiteStatement insert = db.compileStatement(sqlInsert);
 
             while (nameCursor.moveToNext()) {
+               char c[] = nameCursor.getString(columnIndexName).toCharArray();
+
+               String tmp = new String();
+
+               for (int i = 0; i < c.length; i++) {
+                   if (HanziToPinyin.getInstance().isChineseWords(String.valueOf(c[i]))) {
+                       String pinyin = HanziToPinyin.getInstance().getFullPinYin(
+                               String.valueOf(c[i]));
+                       tmp += pinyin.toLowerCase(Locale.ENGLISH);
+                       /**
+                        *Add a " " to make pinyin words like English
+                        *like ���� to pinyin Zhang San
+                        *As English John Smith to John Smith
+                        */
+                       tmp += " ";
+                   } else {
+                       tmp += String.valueOf(c[i]);
+                   }
+               }
+
                 /** Computes a list of prefixes of a given contact name. */
                 final ArrayList<String> namePrefixes =
-                        SmartDialPrefix.generateNamePrefixes(nameCursor.getString(columnIndexName));
+                        SmartDialPrefix.generateNamePrefixes(tmp);
 
                 for (String namePrefix : namePrefixes) {
                     insert.bindLong(1, nameCursor.getLong(columnIndexContactId));
@@ -979,7 +1004,7 @@ public class DialerDatabaseHelper extends SQLiteOpenHelper {
                  * If the contact has either the name or number that matches the query, add to the
                  * result.
                  */
-                final boolean nameMatches = nameMatcher.matches(displayName);
+                final boolean nameMatches = true;//nameMatcher.matches(displayName);
                 final boolean numberMatches =
                         (nameMatcher.matchesNumber(phoneNumber, query) != null);
                 if (nameMatches || numberMatches) {
